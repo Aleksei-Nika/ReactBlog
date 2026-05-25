@@ -1,10 +1,10 @@
 import { Navigate, useLocation } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../contex/AuthContex';
 
 function ProtectedRoute({ children }){
 
     const location= useLocation(); //записываем, откуда пришел пользователь
-    const currentUser = useAuth();
+    const {currentUser} = useAuth();
 
     // ЕСЛИ НЕ АВТОРИЗОВАН
     if(!currentUser){
