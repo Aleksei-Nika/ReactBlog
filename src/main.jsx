@@ -10,6 +10,7 @@ import Settings from './pages/Settings';
 import NotFound from './pages/NoteFound';
 import Login from './pages/Login';
 import Register from './pages/Register';
+import ArticleForm from './pages/ArticleEdit';
 
 import ProtecterRoute from './layouts/ProtectedRout';
 import { AuthProvider } from './contex/AuthContex';
@@ -32,6 +33,8 @@ createRoot(document.getElementById('root')).render(
           <Route path='dashboard' element={<ProtecterRoute><Dashboard /></ProtecterRoute>} >
             <Route path='profile' element={<Profile />} />
             <Route path='settings' element={<Settings />} />
+            <Route path='create-article' element={<ArticleForm />} />
+            <Route path='edit-article/:articleID' element={<ArticleForm />} />
           </Route>
         </Route>
         <Route path='*' element={<NotFound/>} />

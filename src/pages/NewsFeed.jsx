@@ -1,6 +1,7 @@
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
+import {useAuth} from "../contex/AuthContex";
 
 const ARTICLES_DATA = [
     {
@@ -9,9 +10,7 @@ const ARTICLES_DATA = [
     description: 'Описание статьи 1',
     authorId: 'system',
     authorName: 'Редакция',
-
-// http:localhost/news?search=react&category=frontend
-     category: 'javascript'   
+    category: 'javascript'
     },
     {
 
@@ -20,7 +19,7 @@ const ARTICLES_DATA = [
     description: 'Описание статьи 2',
     authorId: 'system',
     authorName: 'Редакция',
-     category: 'css'   
+    category: 'css'   
     },
     {
     id: 'react-router-v6',
@@ -28,7 +27,7 @@ const ARTICLES_DATA = [
     description: 'Описание статьи 3',
     authorId: 'system',
     authorName: 'Редакция',
-     category: 'react'   
+    category: 'react'   
 
     }
 ]
@@ -39,9 +38,10 @@ function NewsFeed(){
     const searchQuery = searchParams.get('search') || '';
     const categoryQuery = searchParams.get('category') || '';
     const [articles, setArticles] = useState([]);
+    const { currentUser } = useAuth();
 
     useEffect(() => {
-        const savedArticles = localStorage.getItem('blog_arcticles');
+        const savedArticles = localStorage.getItem('blog_articles');
         if (savedArticles){
             setArticles(JSON.parse(savedArticles));
         }else{
@@ -73,7 +73,7 @@ function NewsFeed(){
         setSearchParams(newParams);
     }
     // ФИЛЬТРАЦИЯ НА ОСНОВЕ ПОЛУЧЕННЫХ ЗНАЧЕНИЙ
-    const filteredArticles = ARTICLES_DATA.filter((article) => {
+    const filteredArticles = articles.filter((article) => {
         // в нижнем регстре, в описании или названии
         const matchesSearch = article.title.toLowerCase().includes(searchQuery.toLowerCase()) || article.description.toLowerCase().includes(searchQuery.toLowerCase());
     
@@ -88,6 +88,13 @@ function NewsFeed(){
     return (
         <>
             <h1>Лента свежих новостей</h1>
+            {/*КНОПКА ДОБАВЛЯЕТСЯ ЕСЛИ ПОЛЬЗОВАТЕЛЬ АВТОРИЗОВАН*/}
+            {currentUser && (
+                <Link to='/dashboard/create-article'>
+                    + создать статью
+                </Link>
+            )}
+
             {/* БЛОК ФИЛЬТРОВ И ПОИСКА */}
             <div style={{
                 display: 'flex',
@@ -128,13 +135,18 @@ function NewsFeed(){
             <div>
                 {filteredArticles.length > 0 ? (
                     filteredArticles.map((article) => (
-                       <article key={article.id}>
+                        <article key={article.id}>
+                            <span>{article.authorName}</span>
                             <h2>{article.title}</h2>
                             <h2>{article.description}</h2>
                             <span>{article.category.toUpperCase()}</span>
                             <Link to={`/news/${article.id}`}>
                                 Читать полностью
                             </Link>
+                            { currentUser && currentUser.id === article.authorId && (
+                            <Link to={`/dashboard/edit-article/${article.id}`}>
+                                Редактировать
+                            </Link>)}
                         </article> 
                     ))
                 ) : (
