@@ -8,25 +8,34 @@ import Dashboard from './pages/Dashboard';
 import Profile from './pages/Profile';
 import Settings from './pages/Settings';
 import NotFound from './pages/NoteFound';
+import Login from './pages/Login';
+import Register from './pages/Register';
 
+import ProtecterRoute from './layouts/ProtectedRout';
+import { AuthProvider } from './contex/AuthContex';
 
 createRoot(document.getElementById('root')).render(
-  <Router>
-    <Routes>
-      {/* ПРАВИЛО РЕДИРЕКТА: если пользователь зашел просто на сайт ("/")
-      http://localhost/ мы автоматически перенаправляем в ленту новостей /news
-      replace - указываетс что страницу "/" не нужно сохранять в историю переходов*/}
-      <Route path='/' element={<Navigate to="/news" replace/>}/>
-      <Route path='/' element={<BlogLayout />}>
-        <Route path='news' element={<NewsFeed />} />
-        <Route path='about' element={<About />} />
-        <Route path='news/:articleID' element={<ArticlePage />} />
-        <Route path='dashboard' element={<Dashboard />} >
-          <Route path='profile' element={<Profile />} />
-          <Route path='settings' element={<Settings />} />
+  <AuthProvider>
+    <Router>
+      <Routes>
+        {/* ПРАВИЛО РЕДИРЕКТА: если пользователь зашел просто на сайт ("/")
+        http://localhost/ мы автоматически перенаправляем в ленту новостей /news
+        replace - указываетс что страницу "/" не нужно сохранять в историю переходов*/}
+        <Route path='/' element={<Navigate to="/news" replace/>}/>
+        <Route path='/' element={<BlogLayout />}>
+          <Route path='news' element={<NewsFeed />} />
+          <Route path='about' element={<About />} />
+          <Route path='news/:articleID' element={<ArticlePage />} />
+          <Route path='login' element={<Login />} />
+          <Route path='register' element={<Register />} />
+          {/*ЗАЩИЩЕННЫЙ РОУТ КАБИНЕТ */}
+          <Route path='dashboard' element={<ProtecterRoute><Dashboard /></ProtecterRoute>} >
+            <Route path='profile' element={<Profile />} />
+            <Route path='settings' element={<Settings />} />
+          </Route>
         </Route>
-      </Route>
-      <Route path='*' element={<NotFound/>} />
-    </Routes>
-  </Router>
+        <Route path='*' element={<NotFound/>} />
+      </Routes>
+    </Router>
+  </AuthProvider>
 )
