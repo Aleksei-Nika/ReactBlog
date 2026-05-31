@@ -1,24 +1,34 @@
+
+import { useEffect, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
-// http:localhost/news?search=react&category=frontend
+import {useAuth} from "../contex/AuthContex";
 
 const ARTICLES_DATA = [
     {
-     id: 'future-of-js', 
-     title: 'Статья 1',
-     description: 'Описанние статьи 1',
-     category: 'javascript'   
+    id: 'future-of-js',
+    title: 'Статья 1',
+    description: 'Описание статьи 1',
+    authorId: 'system',
+    authorName: 'Редакция',
+    category: 'javascript'
     },
     {
-     id: 'css-modules', 
-     title: 'Статья 2',
-     description: 'Описанние статьи 2',
-     category: 'css'   
+
+    id: 'css-modules',
+    title: 'Статья 2',
+    description: 'Описание статьи 2',
+    authorId: 'system',
+    authorName: 'Редакция',
+    category: 'css'   
     },
     {
-     id: 'react-router-v6', 
-     title: 'Статья 3',
-     description: 'Описанние статьи 3',
-     category: 'react'   
+    id: 'react-router-v6',
+    title: 'Статья 3',
+    description: 'Описание статьи 3',
+    authorId: 'system',
+    authorName: 'Редакция',
+    category: 'react'   
+
     }
 ]
 function NewsFeed(){
@@ -27,6 +37,18 @@ function NewsFeed(){
     // достаем текущие значения фильтров
     const searchQuery = searchParams.get('search') || '';
     const categoryQuery = searchParams.get('category') || '';
+    const [articles, setArticles] = useState([]);
+    const { currentUser } = useAuth();
+
+    useEffect(() => {
+        const savedArticles = localStorage.getItem('blog_articles');
+        if (savedArticles){
+            setArticles(JSON.parse(savedArticles));
+        }else{
+            localStorage.setItem('blog_articles',
+                JSON.stringify(ARTICLES_DATA));
+        }
+    }, [])
 
     const handleSearchChange = (event) => {
         const text = event.target.value;
@@ -51,7 +73,7 @@ function NewsFeed(){
         setSearchParams(newParams);
     }
     // ФИЛЬТРАЦИЯ НА ОСНОВЕ ПОЛУЧЕННЫХ ЗНАЧЕНИЙ
-    const filteredArticles = ARTICLES_DATA.filter((article) => {
+    const filteredArticles = articles.filter((article) => {
         // в нижнем регстре, в описании или названии
         const matchesSearch = article.title.toLowerCase().includes(searchQuery.toLowerCase()) || article.description.toLowerCase().includes(searchQuery.toLowerCase());
     
@@ -63,10 +85,16 @@ function NewsFeed(){
         setSearchParams({}); //передаем пустой объект, URL становится /news
     };
 
-
     return (
         <>
             <h1>Лента свежих новостей</h1>
+            {/*КНОПКА ДОБАВЛЯЕТСЯ ЕСЛИ ПОЛЬЗОВАТЕЛЬ АВТОРИЗОВАН*/}
+            {currentUser && (
+                <Link to='/dashboard/create-article'>
+                    + создать статью
+                </Link>
+            )}
+
             {/* БЛОК ФИЛЬТРОВ И ПОИСКА */}
             <div style={{
                 display: 'flex',
@@ -107,13 +135,18 @@ function NewsFeed(){
             <div>
                 {filteredArticles.length > 0 ? (
                     filteredArticles.map((article) => (
-                       <article key={article.id}>
+                        <article key={article.id}>
+                            <span>{article.authorName}</span>
                             <h2>{article.title}</h2>
                             <h2>{article.description}</h2>
                             <span>{article.category.toUpperCase()}</span>
                             <Link to={`/news/${article.id}`}>
                                 Читать полностью
                             </Link>
+                            { currentUser && currentUser.id === article.authorId && (
+                            <Link to={`/dashboard/edit-article/${article.id}`}>
+                                Редактировать
+                            </Link>)}
                         </article> 
                     ))
                 ) : (
