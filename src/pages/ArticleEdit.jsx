@@ -18,7 +18,7 @@ function ArticleForm(){
         if (isEditMode) {
             const articles = JSON.parse(localStorage.getItem('blog_articles') || '[]');
             const articleEdit = articles.find(a => a.id === articleID);
-            if(!arcticle){
+            if(!articleEdit){
                 setError('Статья не найдена');
                 return;
             }
@@ -37,13 +37,13 @@ function ArticleForm(){
     const handleSubmit = (e) => {
         e.preventDefault();
         setError('');
-        if (!title.tirim() || !description.trim()){
+        if (!title.trim() || !description.trim()){
             setError('Все поля должны быть заполнены');
             return;
         }
-        const article = JSON.parse(localStorage.getItem('blog_articles') || '[]');
+        const articles = JSON.parse(localStorage.getItem('blog_articles') || '[]');
         if(isEditMode){
-            const updateArticle = article.map(a => {
+            const updateArticle = articles.map(a => {
                 if(a.id === articleID){
                     return{
                         ...a,
@@ -64,7 +64,7 @@ function ArticleForm(){
                 authorID: currentUser.id,
                 authorName: currentUser.username
             };
-            arcticles.unshift(newArticle);
+            articles.unshift(newArticle);
             localStorage.setItem('blog_articles', JSON.stringify(articles));
         }
         navigate('/news');
@@ -93,7 +93,7 @@ function ArticleForm(){
                     placeholder="Введите текст статьи"
                 />
                 <button type="submit">Сохранить</button>
-                <button onClick={navigate('/news')}>
+                <button onClick={() => {navigate(-1)}}>
                     Отмена
                 </button>
             </form>
