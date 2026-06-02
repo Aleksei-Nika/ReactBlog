@@ -13,7 +13,6 @@ const ARTICLES_DATA = [
     category: 'javascript'
     },
     {
-
     id: 'css-modules',
     title: 'Статья 2',
     description: 'Описание статьи 2',
@@ -28,7 +27,6 @@ const ARTICLES_DATA = [
     authorId: 'system',
     authorName: 'Редакция',
     category: 'react'   
-
     }
 ]
 function NewsFeed(){
@@ -143,10 +141,11 @@ function NewsFeed(){
                             <Link to={`/news/${article.id}`}>
                                 Читать полностью
                             </Link>
-                            { currentUser && currentUser.id === article.authorId && (
+                            { currentUser && currentUser.id === article.authorID && (
                             <Link to={`/dashboard/edit-article/${article.id}`}>
                                 Редактировать
                             </Link>)}
+                            {console.log(currentUser, article)}
                         </article> 
                     ))
                 ) : (

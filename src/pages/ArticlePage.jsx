@@ -4,11 +4,12 @@ import { useState, useEffect } from "react";
 function ArticlePage(){
     const { articleID } = useParams();
     const navigate = useNavigate(); // возвращает функцию с поможью которой можно программно менять URL
-    const [articles, setArticle] = useState(null);
+    const [article, setArticle] = useState(null);
 
     useEffect(() => {
         const savedArticles = JSON.parse(localStorage.getItem('blog_articles') || '[]');
-        const foundArticles = savedArticles.find(a => a.id === articleID);
+        const foundArticle = savedArticles.find(a => a.id === articleID);
+        setArticle(foundArticle);
     }, [articleID]);
 
     const handleGoBack = () => {
@@ -18,7 +19,7 @@ function ArticlePage(){
         navigate('/news');
     };
 
-    if (!articles) {
+    if (!article) {
         return (
             <>
                 <h2>Статья не найдена</h2>
